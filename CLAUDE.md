@@ -21,7 +21,7 @@ terraform validate
 terraform plan -input=false
 ```
 
-There are no tests. CI (`terraform/cloudflare/.github/workflows/terraform.yml`) runs fmt, init, validate and plan on push and PR to `main`.
+There are no tests. CI (`.github/workflows/terraform.yml`) runs fmt, init, validate and plan on push and PR to `main`.
 
 ## Secrets and variables
 
@@ -33,6 +33,6 @@ There are no tests. CI (`terraform/cloudflare/.github/workflows/terraform.yml`) 
 ## Gotchas
 
 - `required_providers` lives in `providers.tf`, not `versions.tf`. Keep it there to avoid duplicate-declaration errors.
-- The workflow file sits at `terraform/cloudflare/.github/workflows/`, which GitHub does not run. Actions only picks up workflows from the repo-root `.github/workflows/`. Move it there for CI to work.
+- The CI workflow must stay in the repo-root `.github/workflows/`. GitHub ignores workflows nested in subfolders.
 - On disk the folder is `terraform/`, and git paths are lowercase too. Use lowercase paths in commands and scripts.
 - `cloudflare_filter` and `cloudflare_firewall_rule` are deprecated in newer provider versions. Don't bump past `~> 4.0` without migrating.
