@@ -1,0 +1,46 @@
+name: Terraform CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  terraform:
+    name: Terraform - cloudflare
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+
+      - name: Terraform fmt check
+        working-directory: terraform/cloudflare
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        working-directory: terraform/cloudflare
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        working-directory: terraform/cloudflare
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: terraform validate
+
+      - name: Terraform plan
+        working-directory: terraform/cloudflare
+        env:
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        run: terraform plan -input=false
